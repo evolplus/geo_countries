@@ -24,7 +24,7 @@ You can then access the functionality provided by geo_countries to work with geo
 ## Example
 Here's a simple example of how to use geo_countries:
 ```dart
-var countries = await getCountriesFromLatLng(const LatLng(40.6884277, -74.0482555)));
+var countries = await getCountriesFromLatLng(const LatLng(40.6884277, -74.0482555));
 // Getting the list of countries, ordered by the distance from the given point to the countries
 ```
 

@@ -1,4 +1,5 @@
-library geo_country;
+/// A library that provides a list of countries from a point on the map
+library geo_countries;
 
 import 'dart:math';
 
@@ -7,6 +8,8 @@ import 'package:geo/geo.dart';
 import 'dart:convert';
 import 'dart:io';
 
+/// This is a list of countries with their bounding box.
+/// The bounding box is an array of 4 numbers: [minLat, minLng, maxLat, maxLng]
 const Map<String, List<double>> _corners = {
   'AW': [12.4124, -70.0635, 12.624, -69.8654],
   'AF': [29.3619, 60.5049, 38.4904, 74.8941],
@@ -200,12 +203,21 @@ const Map<String, List<double>> _corners = {
 };
 const _verifyCountriesCount = 10;
 
+/// A class that represents the relation between a point and a boundary
 class GeoRelation {
+  /// The nearest distance from the point to one of the poiunt on the boundary
   double distance;
+
+  /// Whether the point is inside the boundary
   bool inside;
   GeoRelation(this.distance, this.inside);
 }
 
+/// Check if a point is inside a polygon
+/// @param {LatLng} point
+/// @param {LatLng[]} polygon
+/// @returns {GeoRelation}
+/// @private
 GeoRelation _isPointInPolygon(LatLng point, List<LatLng> polygon) {
   bool inside = false;
   double dist = double.infinity;
@@ -224,6 +236,11 @@ GeoRelation _isPointInPolygon(LatLng point, List<LatLng> polygon) {
   return GeoRelation(dist, inside);
 }
 
+/// Check if a point is inside a boundary
+/// @param {LatLng} point
+/// @param {LatLng[][][]} boundary
+/// @returns {GeoRelation}
+/// @private
 GeoRelation _isPointInBoundary(LatLng point, List<List<List<LatLng>>> boundary) {
   GeoRelation rs = GeoRelation(double.infinity, false);
   for (var part in boundary) {
@@ -245,6 +262,10 @@ GeoRelation _isPointInBoundary(LatLng point, List<List<List<LatLng>>> boundary) 
 
 final Map<String, List<List<List<LatLng>>>> _boundaries = {};
 
+/// Load boundary from assets
+/// @param {String} countryCode
+/// @returns {Future<LatLng[][][]>}
+/// @private
 Future<List<List<List<LatLng>>>?> _loadBoundary(String countryCode) async {
   try {
     var gzip = await rootBundle.load('assets/countries/$countryCode.json.gz');
@@ -260,6 +281,10 @@ Future<List<List<List<LatLng>>>?> _loadBoundary(String countryCode) async {
   }
 }
 
+/// Check if a point is inside a country
+/// @param {LatLng} point
+/// @param {String} countryCode
+/// @returns {Future<GeoRelation>}
 Future<GeoRelation> isInsideCountry(LatLng point, String countryCode) async {
   List<List<List<LatLng>>>? boundaries = _boundaries[countryCode];
   if (boundaries == null) {
@@ -274,6 +299,9 @@ Future<GeoRelation> isInsideCountry(LatLng point, String countryCode) async {
   return _isPointInBoundary(point, boundaries);
 }
 
+/// Get a list of countries that ordered by the distance from the point
+/// @param {LatLng} point
+/// @returns {Future<String[]>}
 Future<List<String>> getCountriesFromLatLng(LatLng point) async {
   var countries = _corners.keys.toList();
   Map<String, double> dist0 = {};
