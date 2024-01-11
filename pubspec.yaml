@@ -1,6 +1,6 @@
 name: geo_countries
 description: The geo_countries package is a Dart library designed for applications that require geographical data processing. It offers a convenient way to handle country boundaries and geographical coordinates.
-version: 0.0.2
+version: 0.0.3
 homepage: https://github.com/evolplus/geo_countries
 repository: https://github.com/evolplus/geo_countries
 
